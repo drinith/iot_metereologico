@@ -8,7 +8,7 @@ import time
 
     
 
-broker = "iot.eclipse.org"
+broker = "127.0.0.1"
 contexto1 = "casa134/quarto/temperatura"
 contexto2 = "casa134/quarto/umidade"
 

@@ -49,7 +49,7 @@ const char *SSID = "C3T";            // SSID / nome da rede WI-FI que deseja se 
 const char *PASSWORD = "caliel1234"; // Senha da rede WI-FI que deseja se conectar
 
 // MQTT
-const char *BROKER_MQTT = "iot.eclipse.org"; //URL do broker MQTT que se deseja utilizar
+const char *BROKER_MQTT = "10.0.2.2"; //URL do broker MQTT que se deseja utilizar
 int BROKER_PORT = 1883;                      // Porta do Broker MQTT
 long lastMsg = 0;                            //tempo da ultima mensagem publicada
 char msg[50];
@@ -267,8 +267,8 @@ void reconnectMQTT()
     if (MQTT.connect(ID_MQTT))
     {
       Serial.println("Conectado com sucesso ao broker MQTT!");
-      MQTT.subscribe(TOPICO_SUBSCRIBE_P1);
-      MQTT.subscribe(TOPICO_SUBSCRIBE_P2);
+      MQTT.publish(TOPICO_SUBSCRIBE_P1, String(temperatura).c_str());
+      MQTT.publish(TOPICO_SUBSCRIBE_P2, String(umidade).c_str());
     }
     else
     {
