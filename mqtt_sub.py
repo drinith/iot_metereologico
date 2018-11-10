@@ -18,7 +18,7 @@ contexto2 = "casa134/quarto/umidade"
 def on_message_bytes(mosq, obj, msg):
     # This callback will only be called for messages with topics that match
     # $SYS/broker/bytes/#
-    data = time.strftime("%d/%m/%Y")
+    data = time.strftime("%d/%m/%Y %H:%M:%S")
     print(msg.topic)
 
     if(msg.topic == "casa134/quarto/umidade"):
@@ -27,7 +27,7 @@ def on_message_bytes(mosq, obj, msg):
     if(msg.topic == "casa134/quarto/temperatura"):
         escrevaCSV(data,str(msg.payload),"dados_metereologicos_temperatura.txt")
         print("Mensagem: " + str(msg.payload))
-
+    time.sleep(20)
     '''
     if str(msg.payload)=="1":
         print ("The LED is on...")
@@ -44,11 +44,13 @@ def escrevaCSV (data, valor,path):
    file = open(path,"a")
    file.write(data+","+valor+"\n")
    file.close()
+   
     
 
 mqttc = mqtt.Client()
 
 #Chamada do callback para retornar a mensagem 
+
 mqttc.message_callback_add(contexto1, on_message_bytes)
 mqttc.message_callback_add(contexto2, on_message_bytes)
 
