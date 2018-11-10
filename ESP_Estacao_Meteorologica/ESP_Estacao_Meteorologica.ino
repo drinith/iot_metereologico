@@ -5,6 +5,8 @@
 //#include <WiFiUdp.h>
 #include <ArduinoOTA.h>
 #include "DHT.h"
+//biblioteca responsável pela comunicação com o Cartão SD
+#include <SD.h>
 
 //defines de id mqtt e tópicos para publicação e subscribe
 
@@ -39,9 +41,10 @@ DHT dht(DHTPin, DHTTYPE);
 #define D5 14
 #define D6 12
 #define D7 13
-#define D8 15
+#define D8 15 //ligação do CS_PIN
 #define D9 3
 #define D10 1
+#define CS_PIN  D8
 
 // WIFI
 const char *myHostname = "Felipe_ESP";
@@ -49,7 +52,7 @@ const char *SSID = "C3T";            // SSID / nome da rede WI-FI que deseja se 
 const char *PASSWORD = "caliel1234"; // Senha da rede WI-FI que deseja se conectar
 
 // MQTT
-const char *BROKER_MQTT = "10.0.2.2"; //URL do broker MQTT que se deseja utilizar
+const char *BROKER_MQTT = "10.0.2.10"; //URL do broker MQTT que se deseja utilizar
 int BROKER_PORT = 1883;                      // Porta do Broker MQTT
 long lastMsg = 0;                            //tempo da ultima mensagem publicada
 char msg[50];
@@ -71,6 +74,8 @@ float umidade = 0;
 WiFiServer server(80);
 
 //Prototypes"
+void escreverSD();
+void verificarSD();
 void initSerial();
 void initDHT11();
 void loopDHT11();
@@ -92,6 +97,7 @@ void setup()
   //inicializações:
 
   initSerial();
+  verificarSD();
   //initWiFi();// Versão com Wifi normal sem Wifimanage
   init_WifiAp(); //Versão usnado o Wifimanage
   initServer();
@@ -106,6 +112,15 @@ void setup()
 void initDHT11()
 {
   dht.begin();
+}
+
+// verifica se o cartão SD está presente e se pode ser inicializado
+void verificarSD(){
+  if (!SD.begin(CS_PIN)) {
+    Serial.println("Falha, verifique se o cartão está presente.");
+    //programa encerrrado
+    return;
+  }
 }
 
 //Inicia o server
@@ -259,6 +274,7 @@ void reconnectMQTT()
 {
   while (!MQTT.connected())
   {
+    escreverSD();//Escrever o log da temperatura no SD
     Serial.print("* Tentando se conectar ao Broker MQTT: ");
     Serial.println(BROKER_MQTT);
     // if (MQTT.connect(ID_MQTT, USER_MQTT,PASS_MQTT)) // parameros usados para broker proprietário
@@ -467,12 +483,35 @@ void loopDHT11Time()
   delay(2000);
   temperatura = dht.readTemperature();
   umidade = dht.readHumidity();
+
+  //intervalo de espera para uma nova leitura dos dados.
+
+  
+}
+
+void escreverSD(){
+    File dataFile = SD.open("LOG.txt", FILE_WRITE);
+  // se o arquivo foi aberto corretamente, escreve os dados nele
+  if (dataFile) {
+    Serial.println("O arquivo foi aberto com sucesso.");
+      //formatação no arquivo: linha a linha >> UMIDADE | TEMPERATURA
+      dataFile.print(umidade);
+      dataFile.print(" | ");
+      dataFile.println(temperatura);
+      Serial.println("Escreveu no cartão");
+      //fecha o arquivo após usá-lo
+      dataFile.close();
+  }
+  // se o arquivo não pôde ser aberto os dados não serão gravados.
+  else {
+    Serial.println("Falha ao abrir o arquivo LOG.txt");
+  }
+ 
 }
 
 //programa principal
 void loop()
 {
-
   ArduinoOTA.handle(); // keep-alive da comunicação OTA
   loopDHT11();         //loop para apresentar a analise do DHT11
 
@@ -481,4 +520,5 @@ void loop()
   MQTT.loop(); //keep-alive da comunicação com broker MQTT
   publMQTT();  //Publicar o MQTT
   loopDHT11Time();
+  escreverSD();
 }

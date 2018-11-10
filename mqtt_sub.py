@@ -19,9 +19,14 @@ def on_message_bytes(mosq, obj, msg):
     # This callback will only be called for messages with topics that match
     # $SYS/broker/bytes/#
     data = time.strftime("%d/%m/%Y")
+    print(msg.topic)
 
-    escrevaCSV(data,str(msg.payload))
-    print("Mensagem: " + str(msg.payload))
+    if(msg.topic == "casa134/quarto/umidade"):
+        escrevaCSV(data,str(msg.payload),"dados_metereologicos_umidade.txt")
+        print("Mensagem: " + str(msg.payload))
+    if(msg.topic == "casa134/quarto/temperatura"):
+        escrevaCSV(data,str(msg.payload),"dados_metereologicos_temperatura.txt")
+        print("Mensagem: " + str(msg.payload))
 
     '''
     if str(msg.payload)=="1":
@@ -35,8 +40,8 @@ def on_message_bytes(mosq, obj, msg):
         arduino.write('L') 
     '''    
         
-def escrevaCSV (data, valor):
-   file = open("dados_metereologicos.txt","a")
+def escrevaCSV (data, valor,path):
+   file = open(path,"a")
    file.write(data+","+valor+"\n")
    file.close()
     
