@@ -19,7 +19,7 @@ def desenhaGrafico (_x,_y,tipo):
         plt.ylabel('y - axis') 
           
         # giving a title to my graph 
-        plt.title('Grafico '+tipo+ '!') 
+        plt.title(tipo) 
           
         # function to show the plot 
         plt.show()
