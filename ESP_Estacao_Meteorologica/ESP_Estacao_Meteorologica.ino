@@ -101,7 +101,7 @@ void setup()
   //initWiFi();// Versão com Wifi normal sem Wifimanage
   init_WifiAp(); //Versão usnado o Wifimanage
   initServer();
-  //initOTA();
+  initOTA();
   initMQTT(); // Não estamos usando MQTT nesse módulo atpe o momento
   //InitOutput();
   initDHT11();
@@ -448,11 +448,11 @@ void loopDHT11()
           // your actual web page that displays temperature and humidity
           espClient.println("<!DOCTYPE HTML>");
           espClient.println("<html>");
-          espClient.println("<head></head><body><h1>ESP8266 - Temperature and Humidity</h1><h3>Temperature in Celsius: ");
+          espClient.println("<head></head><body><h1>ESP8266 - Temperatura e Umidade</h1><h3>Temperatura em Celsius: ");
           espClient.println(celsiusTemp);
-          espClient.println("*C</h3><h3>Temperature in Fahrenheit: ");
+          espClient.println("*C</h3><h3>Temperatura em Fahrenheit: ");
           espClient.println(fahrenheitTemp);
-          espClient.println("*F</h3><h3>Humidity: ");
+          espClient.println("*F</h3><h3>Umidade: ");
           espClient.println(humidityTemp);
           espClient.println("%</h3><h3>");
           espClient.println("</body></html>");
