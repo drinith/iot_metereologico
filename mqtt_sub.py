@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-import serial # if you have not already done so
+#import serial # if you have not already done so
 import paho.mqtt.client as mqtt
 import time
 
